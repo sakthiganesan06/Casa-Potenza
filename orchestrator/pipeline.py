@@ -344,39 +344,14 @@ async def _run_pipeline_inner(
     )
 
     # ------------------------------------------------------------------
-    # Stage 3.5: Grounding Score Check
-    # If best chunk cosine < threshold — skip LLM, return safe refusal
-    # Saves ~800ms Groq call when retrieval confidence is low
-    # ------------------------------------------------------------------
-    if chunks:
-        best_score = max(c.get("score", 0.0) for c in chunks)
-    else:
-        best_score = 0.0
-
-    if best_score < config.GROUNDING_SCORE_THRESHOLD:
-        t_now = time.perf_counter()
-        logger.info(
-            f"[Pipeline:{query_id}] Grounding score too low ({best_score:.3f} < "
-            f"{config.GROUNDING_SCORE_THRESHOLD}) — safe refusal without LLM call"
-        )
-        refusal = build_context_empty_refusal(bcp47_lang)
-        record = tracker.build_record(
-            query_id=query_id, lang_code=lang_code, query_text=transcript,
-            t0_audio_end=t0_audio_end, t1_text_ready=t1_text_ready,
-            t2_context_ready=t_now, t3_first_token=t_now,
-            guardrail_rejected=False, llm_refused=True,
-        )
-        await tracker.log(record)
-        return {**refusal, "query_id": query_id, "latency": _latency_dict(record)}
-
-    # ------------------------------------------------------------------
-    # Stage 4: LLM Generation
+    # Stage 4: LLM Generation (with retrieved chunks or general knowledge)
     # ------------------------------------------------------------------
     response_dict, t3_first_token = await groq.generate(
         query=transcript,
         context_chunks=chunks,
         lang_code=bcp47_lang,
     )
+
 
     # Save to 2-tier response cache for future instant responses
     if not response_dict.get("refused") and response_dict.get("answer"):
