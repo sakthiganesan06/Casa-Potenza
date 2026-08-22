@@ -1,0 +1,17 @@
+.git
+.venv
+venv
+env
+*.log
+logs/
+data_cache/
+qdrant_db/
+torch_cache/
+snakers4/
+eval/
+scratch/
+*.wav
+*.zip
+cloudflared.exe
+node_modules
+brutalist-voice-chatbot/node_modules

@@ -1,60 +1,28 @@
 # ============================================================
-# Voice-Enabled RAG System — Requirements
-# Uses flexible version constraints for broader compatibility.
-# Python >= 3.10 required.
+# Voice-Enabled RAG System — Serverless Production Requirements
+# Fits within Vercel 500MB function bundle limit.
 # ============================================================
 
-# --- Dataset ---
-datasets>=2.14.0
-huggingface_hub>=0.20.0
-
-# --- Vector Database & Hybrid Retrieval ---
-qdrant-client>=1.9.0
-rank_bm25>=0.2.2
-
-
-
-# --- Embeddings (BGE-m3, ~2.3GB download on first run) ---
-FlagEmbedding>=1.2.9
-torch>=2.0.0
-transformers>=4.40.0
-
-# --- STT WebSocket Client ---
-websockets>=11.0
-
-# --- Groq LLM ---
-groq>=0.9.0
-
-# --- VAD (Silero) ---
-silero-vad>=5.0
-
-# --- Audio I/O ---
-sounddevice>=0.4.6
-soundfile>=0.12.0
-numpy>=1.24.0
-scipy>=1.10.0
-
-# --- Async & Retry ---
-tenacity>=8.2.0
-aiofiles>=23.0.0
-
-# --- Data Processing ---
-pandas>=2.0.0
-nltk>=3.8.0
-
-# --- Web Server & API ---
+# Web Server & API
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 httpx>=0.24.0
 python-multipart>=0.0.6
 pydantic>=2.0.0
-
-# --- Evaluation Analytics ---
-rich>=13.0.0
-matplotlib>=3.7.0
-tabulate>=0.9.0
-
-# --- Utilities ---
 python-dotenv>=1.0.0
-tqdm>=4.65.0
 loguru>=0.7.0
+
+# Groq LLM & Whisper STT
+groq>=0.9.0
+aiofiles>=23.0.0
+tenacity>=8.2.0
+
+# Vector Store & Retrieval
+qdrant-client>=1.9.0
+rank_bm25>=0.2.2
+numpy>=1.24.0
+scipy>=1.10.0
+soundfile>=0.12.0
+onnxruntime>=1.16.0
+transformers>=4.35.0
+
