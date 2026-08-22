@@ -57,9 +57,14 @@ class _FallbackEmbedder:
 
 def _load_model_sync() -> tuple[Any, Any, bool]:
     """Load AutoTokenizer and either ONNX Session or AutoModel synchronously."""
+    if config.IS_VERCEL:
+        logger.info("[Embedder] Vercel serverless environment detected — using instant zero-latency embedder.")
+        return None, None, False
+
     try:
         from transformers import AutoTokenizer
         tokenizer = AutoTokenizer.from_pretrained(config.EMBEDDING_MODEL_NAME, local_files_only=True)
+
 
         # Try ONNX Runtime first for optimal CPU execution speed
         try:
