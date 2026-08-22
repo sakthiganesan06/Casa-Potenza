@@ -78,15 +78,15 @@ class GroqGenerationClient:
 
         # Model fallback chain: try fastest first, fall back on error/overload/not-found
         model_chain = [
-            "llama-3.3-70b-versatile",
-            "llama-3.1-8b-instant",
-            config.GROQ_MODEL,
             "openai/gpt-oss-20b",
             "qwen/qwen3.6-27b",
+            "groq/compound-mini",
+            config.GROQ_MODEL,
         ]
         # Deduplicate while preserving order
         seen: set[str] = set()
         model_chain = [m for m in model_chain if not (m in seen or seen.add(m))]
+
 
         for model in model_chain:
             try:
@@ -99,7 +99,6 @@ class GroqGenerationClient:
                         ],
                         temperature=config.GROQ_TEMPERATURE,
                         max_tokens=config.GROQ_MAX_TOKENS,
-                        response_format={"type": "json_object"},
                         stream=True,
                     )
                     async for chunk in stream:
@@ -119,7 +118,6 @@ class GroqGenerationClient:
                         ],
                         temperature=config.GROQ_TEMPERATURE,
                         max_tokens=config.GROQ_MAX_TOKENS,
-                        response_format={"type": "json_object"},
                         stream=False,
                     )
                     raw_content = res.choices[0].message.content or ""
@@ -141,20 +139,20 @@ class GroqGenerationClient:
             # Fallback to direct completion if streaming was empty
             try:
                 res = await self._client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
+                    model="openai/gpt-oss-20b",
                     messages=[
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user",   "content": user_message},
                     ],
                     temperature=config.GROQ_TEMPERATURE,
                     max_tokens=config.GROQ_MAX_TOKENS,
-                    response_format={"type": "json_object"},
                     stream=False,
                 )
                 raw_content = res.choices[0].message.content or ""
                 first_token_time = time.perf_counter()
             except Exception as e:
                 logger.warning(f"[LLM] Non-streaming fallback: {e}")
+
 
         if not raw_content and last_exc:
             raise last_exc

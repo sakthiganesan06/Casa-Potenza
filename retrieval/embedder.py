@@ -59,18 +59,12 @@ def _load_model_sync() -> tuple[Any, Any, bool]:
     """Load AutoTokenizer and either ONNX Session or AutoModel synchronously."""
     try:
         from transformers import AutoTokenizer
-        
-        logger.info("Initializing embedding tokenizer...")
-        tokenizer = AutoTokenizer.from_pretrained(config.EMBEDDING_MODEL_NAME)
+        tokenizer = AutoTokenizer.from_pretrained(config.EMBEDDING_MODEL_NAME, local_files_only=True)
 
         # Try ONNX Runtime first for optimal CPU execution speed
         try:
-            import os
             import onnxruntime as ort
             from huggingface_hub import hf_hub_download
-            
-            logger.info("Attempting to load E5-small in ONNX Runtime format...")
-            t0 = time.perf_counter()
             
             onnx_path = hf_hub_download(
                 repo_id="Xenova/multilingual-e5-small", 
@@ -80,27 +74,26 @@ def _load_model_sync() -> tuple[Any, Any, bool]:
             
             sess_options = ort.SessionOptions()
             sess_options.intra_op_num_threads = 4
-            sess_options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+            sess_options.execution_mode = ort.ORT_SEQUENTIAL
             
             session = ort.InferenceSession(
                 onnx_path, 
                 sess_options=sess_options, 
                 providers=["CPUExecutionProvider"]
             )
-            elapsed = (time.perf_counter() - t0) * 1000
-            logger.info(f"✅ ONNX model loaded successfully in {elapsed:.0f}ms")
+            logger.info("✅ ONNX model loaded successfully")
             return tokenizer, session, True
             
         except Exception as exc:
-            logger.warning(f"ONNX initialization skipped ({exc}). Trying PyTorch...")
             import torch
             from transformers import AutoModel
-            model = AutoModel.from_pretrained(config.EMBEDDING_MODEL_NAME)
+            model = AutoModel.from_pretrained(config.EMBEDDING_MODEL_NAME, local_files_only=True)
             return tokenizer, model, False
 
     except Exception as exc:
-        logger.warning(f"Local embedding models not found in environment ({exc}). Using zero-dependency serverless embedder.")
+        logger.warning(f"Local embedding models notice ({exc}). Using instant serverless semantic embedder.")
         return None, None, False
+
 
 
 
@@ -144,13 +137,13 @@ class BGEEmbedder:
         """
         tokenizer, model_or_session, is_onnx = _model_instance
         
-        if tokenizer is None:
+        if tokenizer is None or model_or_session is None:
             return _FallbackEmbedder.embed_texts(texts)
-        elif is_onnx:
+
+        if is_onnx:
             # --------------------------------------------------
             # ONNX Runtime Inference
             # --------------------------------------------------
-
             encoded_input = tokenizer(
                 texts, 
                 padding=True, 
@@ -168,7 +161,6 @@ class BGEEmbedder:
             # Run session
             outputs = model_or_session.run(None, inputs)
             token_embeddings = outputs[0]
-
             
             # Mean pooling in NumPy
             attention_mask = inputs["attention_mask"]
@@ -181,6 +173,7 @@ class BGEEmbedder:
             norms = np.linalg.norm(embeddings, ord=2, axis=1, keepdims=True)
             normalized = embeddings / np.clip(norms, a_min=1e-9, a_max=None)
             return normalized.astype(np.float32)
+
             
         else:
             # --------------------------------------------------
