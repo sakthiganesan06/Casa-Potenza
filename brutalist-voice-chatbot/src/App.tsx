@@ -6,12 +6,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BrutalistMicButton } from './components/BrutalistMicButton';
 import { AudioVisualizer } from './components/AudioVisualizer';
-import { BrutalistPopupBox } from './components/BrutalistPopupBox';
+import { BrutalistPopupBox, cleanAiReplyText } from './components/BrutalistPopupBox';
 import { HistoryDrawer } from './components/HistoryDrawer';
 import { HelloIntroScreen } from './components/HelloIntroScreen';
 import { HackerHouseBanner } from './components/HackerHouseBanner';
 import { LatencySpeedometerBar, calculateLatencyScore } from './components/LatencySpeedometerBar';
 import { BrutalistCursorFx } from './components/BrutalistCursorFx';
+
 import {
   RecordingState,
   ChatInteraction,
@@ -453,7 +454,7 @@ export default function App() {
         id: Date.now().toString(),
         timestamp: new Date().toLocaleTimeString(),
         transcription: data.transcription || 'No speech recognized.',
-        reply: data.reply || 'No response generated.',
+        reply: cleanAiReplyText(data.reply || 'No response generated.'),
         persona: currentPersona,
         audioDurationSeconds: duration,
         audioBlobUrl: blobUrl,
@@ -524,7 +525,7 @@ export default function App() {
         id: Date.now().toString(),
         timestamp: new Date().toLocaleTimeString(),
         transcription: queryText.trim(),
-        reply: data.reply || 'Acknowledged.',
+        reply: cleanAiReplyText(data.reply || 'Acknowledged.'),
         persona: currentPersona,
         latencyMs: effectiveLatencyMs,
         latencyScore: calculatedLatScore,
@@ -534,6 +535,7 @@ export default function App() {
           tier: scoreTier,
         },
       };
+
 
       setCurrentInteraction(newInteraction);
       setHistory((prev) => [newInteraction, ...prev]);

@@ -78,10 +78,10 @@ class GroqGenerationClient:
 
         # Model fallback chain: try fastest first, fall back on error/overload/not-found
         model_chain = [
+            "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
             config.GROQ_MODEL,
             "openai/gpt-oss-20b",
-            "openai/gpt-oss-safeguard-20b",
-            "groq/compound-mini",
             "qwen/qwen3.6-27b",
         ]
         # Deduplicate while preserving order
@@ -99,6 +99,7 @@ class GroqGenerationClient:
                         ],
                         temperature=config.GROQ_TEMPERATURE,
                         max_tokens=config.GROQ_MAX_TOKENS,
+                        response_format={"type": "json_object"},
                         stream=True,
                     )
                     async for chunk in stream:
@@ -118,6 +119,7 @@ class GroqGenerationClient:
                         ],
                         temperature=config.GROQ_TEMPERATURE,
                         max_tokens=config.GROQ_MAX_TOKENS,
+                        response_format={"type": "json_object"},
                         stream=False,
                     )
                     raw_content = res.choices[0].message.content or ""
@@ -139,13 +141,14 @@ class GroqGenerationClient:
             # Fallback to direct completion if streaming was empty
             try:
                 res = await self._client.chat.completions.create(
-                    model=config.GROQ_MODEL,
+                    model="llama-3.1-8b-instant",
                     messages=[
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user",   "content": user_message},
                     ],
                     temperature=config.GROQ_TEMPERATURE,
                     max_tokens=config.GROQ_MAX_TOKENS,
+                    response_format={"type": "json_object"},
                     stream=False,
                 )
                 raw_content = res.choices[0].message.content or ""
@@ -159,7 +162,6 @@ class GroqGenerationClient:
         # If no first token was ever received, record now as fallback
         if first_token_time is None:
             first_token_time = time.perf_counter()
-
 
         # Parse JSON response
         response_dict = self._parse_response(raw_content, lang_code)
@@ -179,6 +181,34 @@ class GroqGenerationClient:
         Falls back to a structured refusal if parsing fails (e.g., model
         returned markdown despite system prompt instructions).
         """
+        import re
+
+        def _clean_thinking(text: str) -> str:
+            if not text:
+                return ""
+            if "thinking process" in text.lower() or "**analyze" in text.lower() or "<think>" in text.lower():
+                text = re.sub(r'<think>[\s\S]*?</think>', '', text, flags=re.IGNORECASE)
+                m = re.search(r'\*\*Formulate Answer:?\*\*\s*[\r\n]+([\s\S]+)$', text, re.IGNORECASE)
+                if m:
+                    text = m.group(1).strip()
+                else:
+                    lines = [l.strip() for l in text.split('\n') if l.strip()]
+                    non_thinking = [
+                        l for l in lines 
+                        if not l.startswith(('1.', '2.', '3.', '4.', '5.', '-', '*', '#')) 
+                        and 'thinking process' not in l.lower() 
+                        and 'analyze' not in l.lower() 
+                        and 'determine' not in l.lower()
+                        and 'formulate' not in l.lower()
+                    ]
+                    if non_thinking:
+                        text = non_thinking[-1]
+                    elif lines:
+                        text = lines[-1]
+            text = re.sub(r'^[-\s*•"\'`:]+', '', text)
+            text = re.sub(r'["\'`]+$', '', text)
+            return text.strip()
+
         raw = raw.strip()
         if not raw:
             logger.warning("[LLM] Empty response from Groq")
@@ -208,7 +238,6 @@ class GroqGenerationClient:
             if first_brace < last_brace:
                 raw = raw[first_brace:last_brace + 1].strip()
 
-
         try:
             parsed = json.loads(raw)
             # Validate required fields
@@ -223,10 +252,12 @@ class GroqGenerationClient:
                     elif field == "language":   parsed[field] = lang_code
                     elif field == "refused":    parsed[field] = False
                     elif field == "refusal_reason": parsed[field] = None
+
+            if parsed.get("answer"):
+                parsed["answer"] = _clean_thinking(str(parsed["answer"]))
             return parsed
 
         except json.JSONDecodeError as exc:
-            import re
             logger.warning(f"[LLM] JSON parse warning: {exc}. Attempting partial regex recovery on: {raw[:150]}")
             # Try to recover answer and sources from partial JSON
             ans_match = re.search(r'"answer"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"', raw)
@@ -240,6 +271,7 @@ class GroqGenerationClient:
                         answer = answer.encode('utf-8').decode('unicode-escape')
                     except Exception:
                         pass
+                answer = _clean_thinking(answer)
                 src_match = re.findall(r'"(q\d+_p\d+|general_knowledge)"', raw)
                 return {
                     "answer": answer,
@@ -250,18 +282,13 @@ class GroqGenerationClient:
                     "refusal_reason": None,
                 }
 
-            # Fallback: Extract meaningful text from LLM output instead of refusing
-            clean_text = raw.strip().replace('```json', '').replace('```', '').strip()
-            for prefix in ['{"answer":', '"answer":', 'answer:']:
-                if prefix in clean_text:
-                    clean_text = clean_text.split(prefix, 1)[1].strip().strip('",} \n').strip()
-            
-            clean_text = clean_text.lstrip('{').rstrip('}').strip()
-            if clean_text:
+            # If raw is text, clean thinking and use direct answer
+            cleaned_direct = _clean_thinking(raw)
+            if cleaned_direct and len(cleaned_direct) < 300 and not cleaned_direct.startswith("{"):
                 return {
-                    "answer": clean_text,
+                    "answer": cleaned_direct,
                     "sources": ["general_knowledge"],
-                    "confidence": 0.95,
+                    "confidence": 0.9,
                     "language": lang_code,
                     "refused": False,
                     "refusal_reason": None,
@@ -269,12 +296,12 @@ class GroqGenerationClient:
 
             logger.error(f"[LLM] JSON parse unrecoverable error. Raw: {raw[:200]}")
             return {
-                "answer": "Acknowledged.",
+                "answer": None,
                 "sources": [],
-                "confidence": 0.5,
+                "confidence": 0.0,
                 "language": lang_code,
-                "refused": False,
-                "refusal_reason": None,
+                "refused": True,
+                "refusal_reason": "parse_error",
             }
 
 

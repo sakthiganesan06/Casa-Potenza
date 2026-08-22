@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, Volume2, VolumeX, Mic, ArrowRight, Sparkles, MessageSquare, Terminal } from 'lucide-react';
+import { X, Copy, Check, Volume2, Mic } from 'lucide-react';
 import { ChatInteraction, ThemeColor } from '../types';
 import { audioFX } from '../utils/audioFx';
 import { ScoreSmallBar } from './ScoreSmallBar';
@@ -11,6 +11,33 @@ interface BrutalistPopupBoxProps {
   onClose: () => void;
   onRecordAgain: () => void;
   themeColor?: ThemeColor;
+}
+
+export function cleanAiReplyText(text: string): string {
+  if (!text) return '';
+  if (text.includes("thinking process") || text.includes("**Analyze") || text.includes("<think>")) {
+    const withoutThink = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+    const formulateMatch = withoutThink.match(/\*\*Formulate Answer:?\*\*\s*[\r\n]+([\s\S]+)$/i);
+    if (formulateMatch && formulateMatch[1]) {
+      return formulateMatch[1].replace(/^[-\s*•"':]+/, '').replace(/["'`]+$/, '').trim();
+    }
+    const lines = withoutThink.split('\n').map(l => l.trim()).filter(Boolean);
+    const nonThinking = lines.filter(l => 
+      !l.startsWith('1.') && !l.startsWith('2.') && !l.startsWith('3.') && !l.startsWith('4.') && !l.startsWith('5.') && 
+      !l.startsWith('-') && !l.startsWith('*') && !l.startsWith('#') &&
+      !l.toLowerCase().includes('thinking process') && 
+      !l.toLowerCase().includes('analyze') && 
+      !l.toLowerCase().includes('determine') &&
+      !l.toLowerCase().includes('formulate')
+    );
+    if (nonThinking.length > 0) {
+      return nonThinking[nonThinking.length - 1].replace(/^[-\s*•"':]+/, '').replace(/["'`]+$/, '').trim();
+    }
+    if (lines.length > 0) {
+      return lines[lines.length - 1].replace(/^[-\s*•"':]+/, '').replace(/["'`]+$/, '').trim();
+    }
+  }
+  return text.replace(/^"|"$/g, '').trim();
 }
 
 export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
@@ -25,6 +52,8 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
   const [activeTTSSection, setActiveTTSSection] = useState<'transcription' | 'reply' | null>(null);
 
   if (!isOpen || !interaction) return null;
+
+  const displayReply = cleanAiReplyText(interaction.reply);
 
   const copyToClipboard = (text: string, section: 'transcription' | 'reply' | 'all') => {
     navigator.clipboard.writeText(text);
@@ -200,7 +229,7 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
                   type="button"
-                  onClick={() => handlePlayTTS(interaction.reply, 'reply')}
+                  onClick={() => handlePlayTTS(displayReply, 'reply')}
                   className={`font-mono text-[11px] sm:text-xs font-bold uppercase px-2 sm:px-2.5 py-1 border-2 border-black transition-colors cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
                     activeTTSSection === 'reply'
                       ? 'bg-black text-white'
@@ -213,7 +242,7 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(interaction.reply, 'reply')}
+                  onClick={() => copyToClipboard(displayReply, 'reply')}
                   className="font-mono text-[11px] sm:text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2 sm:px-2.5 py-1 border-2 border-black transition-colors flex items-center gap-1 cursor-pointer"
                   title="Copy answer"
                 >
@@ -224,7 +253,7 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
             </div>
 
             <p className="font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap select-text font-semibold text-black">
-              {interaction.reply}
+              {displayReply}
             </p>
           </div>
         </div>
