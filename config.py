@@ -17,15 +17,26 @@ load_dotenv()
 # Project Paths
 # ---------------------------------------------------------------------------
 BASE_DIR = Path(__file__).parent.resolve()
-QDRANT_PATH = os.getenv("QDRANT_PATH", str(BASE_DIR / "qdrant_db"))
-LOG_DIR = os.getenv("LOG_DIR", str(BASE_DIR / "logs"))
-EVAL_OUTPUT_DIR = os.getenv("EVAL_OUTPUT_DIR", str(BASE_DIR / "eval" / "results"))
+IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME") or os.getenv("LAMBDA_TASK_ROOT"))
 
-# Ensure directories exist
-for _dir in [LOG_DIR, EVAL_OUTPUT_DIR]:
-    Path(_dir).mkdir(parents=True, exist_ok=True)
-if not QDRANT_PATH.startswith("http") and not QDRANT_PATH.startswith("grpc") and QDRANT_PATH != ":memory:":
-    Path(QDRANT_PATH).mkdir(parents=True, exist_ok=True)
+if IS_VERCEL:
+    LOG_DIR = "/tmp/logs"
+    EVAL_OUTPUT_DIR = "/tmp/eval"
+    QDRANT_PATH = os.getenv("QDRANT_PATH", ":memory:")
+else:
+    LOG_DIR = os.getenv("LOG_DIR", str(BASE_DIR / "logs"))
+    EVAL_OUTPUT_DIR = os.getenv("EVAL_OUTPUT_DIR", str(BASE_DIR / "eval" / "results"))
+    QDRANT_PATH = os.getenv("QDRANT_PATH", str(BASE_DIR / "qdrant_db"))
+
+# Ensure directories exist safely
+try:
+    for _dir in [LOG_DIR, EVAL_OUTPUT_DIR]:
+        Path(_dir).mkdir(parents=True, exist_ok=True)
+    if not QDRANT_PATH.startswith("http") and not QDRANT_PATH.startswith("grpc") and QDRANT_PATH != ":memory:":
+        Path(QDRANT_PATH).mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
+
 
 
 # ---------------------------------------------------------------------------

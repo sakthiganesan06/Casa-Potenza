@@ -223,19 +223,20 @@ class VectorStore:
 
     def _connect_and_index_sync(self) -> QdrantClient:
         """Initialize Qdrant client and build numpy indices synchronously (runs in executor)."""
-        try:
-            if config.QDRANT_PATH.startswith("http://") or config.QDRANT_PATH.startswith("https://"):
-                logger.info(f"Connecting to remote Qdrant service at: {config.QDRANT_PATH}")
-                client = QdrantClient(url=config.QDRANT_PATH)
-            elif os.path.exists(config.QDRANT_PATH):
+        if config.QDRANT_PATH.startswith("http://") or config.QDRANT_PATH.startswith("https://"):
+            logger.info(f"Connecting to remote Qdrant service at: {config.QDRANT_PATH}")
+            client = QdrantClient(url=config.QDRANT_PATH)
+        elif config.QDRANT_PATH == ":memory:":
+            logger.info("Initializing in-memory Qdrant instance")
+            client = QdrantClient(location=":memory:")
+        else:
+            try:
                 logger.info(f"Initializing local in-process Qdrant at: {config.QDRANT_PATH}")
                 client = QdrantClient(path=config.QDRANT_PATH)
-            else:
-                logger.info("Qdrant local directory not found; using in-memory Qdrant for serverless runtime")
+            except Exception as exc:
+                logger.warning(f"Local Qdrant path failed ({exc}). Using in-memory Qdrant.")
                 client = QdrantClient(location=":memory:")
-        except Exception as e:
-            logger.warning(f"Qdrant file initialization notice: {e}; falling back to in-memory Qdrant")
-            client = QdrantClient(location=":memory:")
+
 
         logger.info("Qdrant client connected successfully")
 
@@ -256,7 +257,6 @@ class VectorStore:
             if not exists:
                 self._np_index.build_from_scroll(col, [])
                 continue
-
 
             info = client.get_collection(col)
             logger.info(f"NumpyIndex: scrolling {info.points_count} points for '{col}'...")

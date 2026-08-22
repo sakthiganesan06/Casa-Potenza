@@ -82,9 +82,14 @@ class LatencyTracker:
         self._log_path = Path(config.LOG_DIR) / "latency_log.jsonl"
         self._records: list[LatencyRecord] = []
         self._write_lock = asyncio.Lock()
-        # Ensure log file exists
-        self._log_path.touch(exist_ok=True)
+        # Ensure log file exists safely
+        try:
+            self._log_path.parent.mkdir(parents=True, exist_ok=True)
+            self._log_path.touch(exist_ok=True)
+        except Exception:
+            pass
         logger.info(f"LatencyTracker: logging to {self._log_path}")
+
 
     def build_record(
         self,

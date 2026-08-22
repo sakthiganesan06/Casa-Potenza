@@ -32,65 +32,76 @@ _model_lock = asyncio.Lock()
 _query_cache: dict[str, np.ndarray] = {}
 MAX_QUERY_CACHE_SIZE = 2000
 
+class _FallbackEmbedder:
+    """Lightweight deterministic 384-d semantic hash embedder for serverless environments."""
+    @staticmethod
+    def embed_texts(texts: list[str]) -> np.ndarray:
+        import hashlib
+        vectors = []
+        for text in texts:
+            vec = np.zeros(384, dtype=np.float32)
+            words = text.lower().split()
+            for w in words:
+                h = int(hashlib.md5(w.encode("utf-8")).hexdigest(), 16)
+                idx = h % 384
+                sign = 1.0 if (h % 2 == 0) else -1.0
+                vec[idx] += sign
+            norm = np.linalg.norm(vec)
+            if norm > 1e-9:
+                vec /= norm
+            else:
+                vec[0] = 1.0
+            vectors.append(vec)
+        return np.array(vectors, dtype=np.float32)
+
+
 def _load_model_sync() -> tuple[Any, Any, bool]:
     """Load AutoTokenizer and either ONNX Session or AutoModel synchronously."""
-    import os
-    os.environ["HF_HUB_OFFLINE"] = "1"
-    os.environ["TRANSFORMERS_OFFLINE"] = "1"
-
-    from transformers import AutoTokenizer
-    
-    logger.info("Initializing embedding tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(config.EMBEDDING_MODEL_NAME)
-
-    
-    # Try ONNX Runtime first for optimal CPU execution speed
     try:
-        import os
-        import onnxruntime as ort
-        from huggingface_hub import hf_hub_download
+        from transformers import AutoTokenizer
         
-        logger.info("Attempting to load E5-small in ONNX Runtime format...")
-        t0 = time.perf_counter()
-        
-        # Use local cache only to avoid network hangs
-        os.environ["HF_HUB_OFFLINE"] = "1"
-        onnx_path = hf_hub_download(
-            repo_id="Xenova/multilingual-e5-small", 
-            filename="onnx/model.onnx",
-            local_files_only=True,
-        )
-        
-        # Configure thread pool for max CPU throughput
-        sess_options = ort.SessionOptions()
-        sess_options.intra_op_num_threads = 12
-        sess_options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
-        
-        session = ort.InferenceSession(
-            onnx_path, 
-            sess_options=sess_options, 
-            providers=["CPUExecutionProvider"]
-        )
-        elapsed = (time.perf_counter() - t0) * 1000
-        logger.info(f"✅ ONNX model loaded successfully in {elapsed:.0f}ms")
-        return tokenizer, session, True
-        
-    except Exception as exc:
-        logger.warning(f"ONNX initialization failed ({exc}). Falling back to standard PyTorch CPU model.")
-        
-        import torch
-        from transformers import AutoModel
+        logger.info("Initializing embedding tokenizer...")
+        tokenizer = AutoTokenizer.from_pretrained(config.EMBEDDING_MODEL_NAME)
+
+        # Try ONNX Runtime first for optimal CPU execution speed
         try:
-            torch.set_num_threads(12)
-        except Exception:
-            pass
+            import os
+            import onnxruntime as ort
+            from huggingface_hub import hf_hub_download
             
-        logger.info(f"Loading PyTorch model: {config.EMBEDDING_MODEL_NAME} ...")
-        t0 = time.perf_counter()
-        model = AutoModel.from_pretrained(config.EMBEDDING_MODEL_NAME)
-        elapsed = (time.perf_counter() - t0) * 1000
-        logger.info(f"✅ PyTorch model loaded in {elapsed:.0f}ms")
-        return tokenizer, model, False
+            logger.info("Attempting to load E5-small in ONNX Runtime format...")
+            t0 = time.perf_counter()
+            
+            onnx_path = hf_hub_download(
+                repo_id="Xenova/multilingual-e5-small", 
+                filename="onnx/model.onnx",
+                local_files_only=True,
+            )
+            
+            sess_options = ort.SessionOptions()
+            sess_options.intra_op_num_threads = 4
+            sess_options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+            
+            session = ort.InferenceSession(
+                onnx_path, 
+                sess_options=sess_options, 
+                providers=["CPUExecutionProvider"]
+            )
+            elapsed = (time.perf_counter() - t0) * 1000
+            logger.info(f"✅ ONNX model loaded successfully in {elapsed:.0f}ms")
+            return tokenizer, session, True
+            
+        except Exception as exc:
+            logger.warning(f"ONNX initialization skipped ({exc}). Trying PyTorch...")
+            import torch
+            from transformers import AutoModel
+            model = AutoModel.from_pretrained(config.EMBEDDING_MODEL_NAME)
+            return tokenizer, model, False
+
+    except Exception as exc:
+        logger.warning(f"Local embedding models not found in environment ({exc}). Using zero-dependency serverless embedder.")
+        return None, None, False
+
 
 
 class BGEEmbedder:
@@ -133,7 +144,9 @@ class BGEEmbedder:
         """
         tokenizer, model_or_session, is_onnx = _model_instance
         
-        if is_onnx:
+        if tokenizer is None:
+            return _FallbackEmbedder.embed_texts(texts)
+
             # --------------------------------------------------
             # ONNX Runtime Inference
             # --------------------------------------------------

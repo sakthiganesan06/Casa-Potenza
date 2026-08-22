@@ -52,12 +52,17 @@ base_dir = Path(__file__).parent
 dist_dir = base_dir / "brutalist-voice-chatbot" / "dist"
 assets_dir = dist_dir / "assets"
 static_dir = base_dir / "static"
-static_dir.mkdir(exist_ok=True)
+try:
+    static_dir.mkdir(exist_ok=True)
+except Exception:
+    pass
 
 # Mount assets and static
 if assets_dir.exists():
     app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
-app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
 
 
 def detect_lang_from_text(text: str) -> str:
@@ -126,10 +131,15 @@ def detect_lang_from_text(text: str) -> str:
 @app.on_event("startup")
 async def startup_event():
     """Warm up the Voice RAG pipeline and pre-warm response cache before serving traffic."""
-    logger.info("=== Starting Voice RAG Web Server on http://localhost:8000 ===")
-    await initialize_pipeline()
-    embedder = await get_embedder()
-    await embedder.embed_one("hello")
+    logger.info("=== Starting Voice RAG Web Server ===")
+    try:
+        await initialize_pipeline()
+        embedder = await get_embedder()
+        await embedder.embed_one("hello")
+    except Exception as exc:
+        logger.warning(f"Startup initialization notice: {exc}")
+        return
+
 
     # Pre-warm common frequent queries in response cache for instant <5ms retrieval
     sample_warms = [
