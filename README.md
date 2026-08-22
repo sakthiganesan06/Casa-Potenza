@@ -1,5 +1,9 @@
 # ⚡ CASA POTENZA — Ultra-Low-Latency Multilingual Voice RAG
 
+LIVE LINK : https://casa-potenza.vercel.app
+
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Latency SLA](https://img.shields.io/badge/Latency%20SLA-%3C200ms%20(100%25%20MET)-10B981)](#-latency-benchmarks--percentile-sla)
 [![Languages](https://img.shields.io/badge/Languages-Tamil%20%7C%20Hindi%20%7C%20Telugu%20%7C%20English-blue)](#-supported-languages--phonetic-transliteration)
