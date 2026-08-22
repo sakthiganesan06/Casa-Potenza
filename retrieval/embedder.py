@@ -146,10 +146,11 @@ class BGEEmbedder:
         
         if tokenizer is None:
             return _FallbackEmbedder.embed_texts(texts)
-
+        elif is_onnx:
             # --------------------------------------------------
             # ONNX Runtime Inference
             # --------------------------------------------------
+
             encoded_input = tokenizer(
                 texts, 
                 padding=True, 
