@@ -1,0 +1,6 @@
+{
+  "name": "Brutalist Voice Chatbot",
+  "description": "A minimalist brutalist voice-driven chatbot with centered mic recording, pulsing animations, and audio transcription popup.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

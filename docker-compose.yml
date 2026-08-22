@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  voice-rag-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voice-rag-web
+    ports:
+      - "8000:8000"
+    environment:
+      - SARVAM_API_KEY=${SARVAM_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-openai/gpt-oss-20b}
+      - PORT=8000
+    volumes:
+      - ./lance_db:/app/lance_db
+      - ./logs:/app/logs
+    restart: unless-stopped

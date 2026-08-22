@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multilingual Voice RAG — Sub-200ms Interactive Engine</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-group">
+      <div class="logo-icon">⚡</div>
+      <div class="title-wrap">
+        <h1>Voice-Enabled Multilingual RAG</h1>
+        <p>Real-Time Conversational AI • Sub-200ms Target Budget</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge badge-vector" id="vectorCountBadge">24,693 Vectors (LanceDB)</div>
+      <div class="badge badge-sla">SLA: &lt;200ms</div>
+    </div>
+  </header>
+
+  <!-- Controls Bar -->
+  <div class="control-bar">
+    <!-- Language Selector -->
+    <div class="control-panel">
+      <span class="control-label">Language</span>
+      <div class="lang-selector">
+        <button class="btn-pill active" data-lang="en">🇬🇧 English</button>
+        <button class="btn-pill" data-lang="hi">🇮🇳 Hindi</button>
+        <button class="btn-pill" data-lang="ta">🇮🇳 Tamil</button>
+        <button class="btn-pill" data-lang="te">🇮🇳 Telugu</button>
+      </div>
+    </div>
+
+    <!-- Strategy Selector -->
+    <div class="control-panel">
+      <span class="control-label">Chunk Strategy</span>
+      <div class="strategy-selector">
+        <button class="btn-pill active" data-strategy="semantic">Semantic Parent-Child</button>
+        <button class="btn-pill" data-strategy="sliding">Sliding Window (15%)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- Left Column: Voice & Text Input -->
+    <div class="card">
+      <div class="card-title">🎙️ Query Input</div>
+
+      <!-- Microphone Section -->
+      <div class="mic-section">
+        <div class="mic-btn-container" id="micContainer">
+          <div class="mic-pulse"></div>
+          <button class="mic-btn" id="micBtn" title="Click to start/stop speaking">🎤</button>
+        </div>
+        <div class="mic-status" id="micStatus">Click to Speak</div>
+        <canvas id="visualizer"></canvas>
+      </div>
+
+      <!-- Text Query Input -->
+      <div class="text-query-wrap">
+        <input type="text" class="text-input" id="textQuery" placeholder="Or type your question here..." />
+        <button class="btn-primary" id="submitBtn">Ask</button>
+      </div>
+
+      <!-- Sample Queries -->
+      <div class="samples-wrap">
+        <div class="control-label" style="font-size: 11px;">Quick Examples:</div>
+        <div class="sample-chips" id="sampleChips">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Live Milestones & Grounded Answer -->
+    <div class="card">
+      <div class="card-title">📊 Real-Time Response & Milestones</div>
+
+      <!-- Latency Breakdown Grid -->
+      <div class="latency-grid">
+        <div class="metric-box">
+          <span class="metric-name">STT (Text_Ready)</span>
+          <span class="metric-val" id="sttMetric">—</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-name">Guardrail Router</span>
+          <span class="metric-val green" id="guardMetric">&lt; 1.0 ms</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-name">Vector ANN</span>
+
+          <span class="metric-val" id="retrieveMetric">—</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-name">Groq LLM TTFT</span>
+          <span class="metric-val" id="ttftMetric">—</span>
+        </div>
+      </div>
+
+      <!-- Total Latency Banner -->
+      <div class="total-banner" id="totalBanner">
+        <span class="total-title">⏱️ End-to-End Latency</span>
+        <span class="total-time" id="totalTime">0.0 ms</span>
+      </div>
+
+      <!-- Answer Box -->
+      <div class="answer-box">
+        <div class="answer-header">
+          <span class="control-label" style="font-size: 11px;">Grounded Output</span>
+          <span class="confidence-tag" id="confidenceBadge">Ready</span>
+        </div>
+
+        <div class="answer-text" id="answerText">
+          Ask a question via microphone or text in English, Hindi, Tamil, or Telugu to see the live RAG response.
+        </div>
+
+        <div class="answer-footer">
+          <div class="sources-pills" id="sourcesContainer">
+            <span style="color: var(--text-dim); font-size:12px;">No sources yet</span>
+          </div>
+          <button class="btn-tts" id="ttsBtn" title="Listen to response aloud">🔊 Listen</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
