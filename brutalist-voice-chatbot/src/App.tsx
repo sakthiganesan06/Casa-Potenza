@@ -680,11 +680,11 @@ export default function App() {
           </div>
         </div>
 
-        {/* Center: Hacker House Goa Banner (In flex flow with zero overlap on Desktop) */}
+        {/* Center: Hacker House Goa Banner (Clean single responsive instance) */}
         <div className="hidden md:flex items-center justify-center flex-1 mx-2 overflow-hidden">
-          <HackerHouseBanner size="sm" className="xl:hidden" />
-          <HackerHouseBanner size="md" className="hidden xl:inline-flex" />
+          <HackerHouseBanner />
         </div>
+
 
         {/* Row 2 on Mobile (Full-width Language Selector) / Right Toolbar on Desktop */}
         <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-1.5 sm:gap-2 z-10">

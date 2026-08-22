@@ -107,14 +107,14 @@ export const HelloIntroScreen: React.FC<HelloIntroScreenProps> = ({ onComplete }
           </button>
         </div>
 
-        {/* Center: Hacker House Goa Banner (Cleanly placed in layout flow with zero overlap) */}
+        {/* Center: Hacker House Goa Banner (Clean single responsive instance) */}
         <div
           className="pointer-events-auto z-10 flex justify-center"
           onClick={(e) => e.stopPropagation()}
         >
-          <HackerHouseBanner size="sm" className="md:hidden" />
-          <HackerHouseBanner size="md" className="hidden md:inline-flex" />
+          <HackerHouseBanner />
         </div>
+
 
         {/* Desktop Enter Action */}
         <button
