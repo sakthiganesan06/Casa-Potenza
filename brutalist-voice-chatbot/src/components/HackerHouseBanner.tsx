@@ -22,12 +22,16 @@ export const HackerHouseBanner: React.FC<HackerHouseBannerProps> = ({
   };
 
   return (
-    <div
-      className={`inline-flex items-center justify-center select-none ${className}`}
-      title="HACKER गोवा HOUSE"
+    <a
+      href="https://hhgoa.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center justify-center select-none cursor-pointer group transition-transform active:translate-x-[2px] active:translate-y-[2px] ${className}`}
+      title="Visit Official Hacker House Goa (hhgoa.com)"
+      aria-label="Visit Official Hacker House Goa website"
     >
       <div
-        className={`relative flex items-center justify-center bg-[#054320] border-2 sm:border-[3px] border-black shadow-[4px_4px_0px_0px_#000000] overflow-visible ${containerSizes[size]}`}
+        className={`relative flex items-center justify-center bg-[#054320] group-hover:bg-[#075c2c] border-2 sm:border-[3px] border-black shadow-[4px_4px_0px_0px_#000000] group-hover:shadow-[6px_6px_0px_0px_#000000] group-active:shadow-[2px_2px_0px_0px_#000000] transition-all overflow-visible ${containerSizes[size]}`}
       >
         <div className="flex items-center justify-center tracking-tight leading-none gap-1 sm:gap-1.5">
           {/* HACKER */}
@@ -42,7 +46,7 @@ export const HackerHouseBanner: React.FC<HackerHouseBannerProps> = ({
 
           {/* गोवा */}
           <span
-            className={`relative z-10 font-black bg-[#E6007A] text-white border-2 border-black rounded-[2px] transform -rotate-2 shadow-[2px_2px_0px_0px_#000000] font-sans ${devanagariSizes[size]}`}
+            className={`relative z-10 font-black bg-[#E6007A] group-hover:bg-[#ff0084] text-white border-2 border-black rounded-[2px] transform -rotate-2 group-hover:rotate-0 shadow-[2px_2px_0px_0px_#000000] transition-all font-sans ${devanagariSizes[size]}`}
             style={{
               letterSpacing: '0.02em',
               textShadow: '0 1px 1px rgba(0,0,0,0.5)',
@@ -62,7 +66,8 @@ export const HackerHouseBanner: React.FC<HackerHouseBannerProps> = ({
           </span>
         </div>
       </div>
-    </div>
+    </a>
   );
 };
+
 
