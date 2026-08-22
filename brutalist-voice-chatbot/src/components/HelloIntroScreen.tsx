@@ -84,35 +84,52 @@ export const HelloIntroScreen: React.FC<HelloIntroScreenProps> = ({ onComplete }
       animate={{ opacity: isExiting ? 0 : 1 }}
       transition={{ duration: 0.4 }}
       onClick={handleEnterHome}
-      className="fixed inset-0 z-50 flex flex-col justify-between items-center bg-[#faf9f5] text-black cursor-pointer select-none p-6 sm:p-12 overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col justify-between items-center bg-[#faf9f5] text-black cursor-pointer select-none p-4 sm:p-8 md:p-12 overflow-hidden"
     >
       {/* Subtle Brutalist grid background */}
       <div className="absolute inset-0 bg-grid opacity-25 pointer-events-none" />
 
-      {/* Top Bar: Studio Logo, Centered Hacker House Goa Banner & Enter Home Action */}
-      <div className="w-full max-w-5xl flex items-center justify-between gap-2 sm:gap-4 z-20 relative min-h-[50px]">
-        <div className="z-10">
+      {/* Top Bar: Studio Logo, Hacker House Goa Banner & Enter Home Action (Zero-Overlap Responsive Layout) */}
+      <div className="w-full max-w-5xl flex flex-col md:flex-row items-center justify-between gap-3 z-20 relative">
+        {/* Mobile Row 1 / Desktop Left Item: Studio Logo & Mobile Enter Button */}
+        <div className="w-full flex items-center justify-between md:w-auto z-10">
           <StudioLogo />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEnterHome();
+            }}
+            className="md:hidden font-mono text-xs font-black uppercase px-3 py-1.5 border-2 border-black bg-white hover:bg-black hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 hard-shadow-xs"
+          >
+            <span>ENTER</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
+          </button>
         </div>
 
-        {/* Precise Screen Center Banner */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-10 flex justify-center">
-          <HackerHouseBanner size="md" />
+        {/* Center: Hacker House Goa Banner (Cleanly placed in layout flow with zero overlap) */}
+        <div
+          className="pointer-events-auto z-10 flex justify-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <HackerHouseBanner size="sm" className="md:hidden" />
+          <HackerHouseBanner size="md" className="hidden md:inline-flex" />
         </div>
 
+        {/* Desktop Enter Action */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             handleEnterHome();
           }}
-          className="font-mono text-xs font-black uppercase px-3 py-1.5 border-2 border-black bg-white hover:bg-black hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 hard-shadow-xs shrink-0 z-10"
+          className="hidden md:flex font-mono text-xs font-black uppercase px-3.5 py-1.5 border-2 border-black bg-white hover:bg-black hover:text-white transition-colors cursor-pointer items-center gap-1.5 hard-shadow-xs shrink-0 z-10"
         >
-          <span className="hidden sm:inline">ENTER HOME</span>
-          <span className="sm:hidden">ENTER</span>
+          <span>ENTER HOME</span>
           <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
         </button>
       </div>
+
 
       {/* Center Display: Animated Indian Language Greetings */}
       <div className="flex-1 flex flex-col items-center justify-center text-center z-10 max-w-3xl px-4 py-8">
