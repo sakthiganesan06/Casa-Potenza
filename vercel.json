@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "brutalist-voice-chatbot/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.py"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/brutalist-voice-chatbot/dist/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/brutalist-voice-chatbot/dist/$1"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": "."
+  }
+}
