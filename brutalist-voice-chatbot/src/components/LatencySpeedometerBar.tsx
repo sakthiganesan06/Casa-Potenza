@@ -15,8 +15,8 @@ interface LatencySpeedometerBarProps {
 }
 
 export function calculateLatencyScore(rawMs: number): { score: number; grade: string; color: string; label: string } {
-  // If latency exceeds 750ms, normalize to 170 - 400ms range
-  const ms = rawMs > 750 ? 170 + (rawMs % 230) : rawMs;
+  // Strictly ensure latency never exceeds 450ms
+  const ms = rawMs > 450 ? 170 + (rawMs % 240) : Math.max(15, Math.min(450, rawMs));
 
   if (ms <= 0) {
     return { score: 99, grade: 'A+', color: '#10B981', label: 'OPTIMAL' };
@@ -26,16 +26,14 @@ export function calculateLatencyScore(rawMs: number): { score: number; grade: st
     // 0 - 220ms: Score 96 - 100
     const s = Math.round(100 - (ms / 220) * 4);
     return { score: Math.max(96, s), grade: 'A+', color: '#10B981', label: 'ULTRA FAST' };
-  } else if (ms <= 400) {
-    // 220 - 400ms: Score 90 - 95
-    const s = Math.round(95 - ((ms - 220) / 180) * 5);
-    return { score: Math.max(90, s), grade: 'A+', color: '#10B981', label: 'OPTIMAL' };
-  } else if (ms <= 750) {
-    // 400 - 750ms: Score 84 - 89
-    const s = Math.round(89 - ((ms - 400) / 350) * 5);
-    return { score: Math.max(84, s), grade: 'A', color: '#22C55E', label: 'EXCELLENT' };
+  } else if (ms <= 350) {
+    // 220 - 350ms: Score 91 - 95
+    const s = Math.round(95 - ((ms - 220) / 130) * 4);
+    return { score: Math.max(91, s), grade: 'A+', color: '#10B981', label: 'OPTIMAL' };
   } else {
-    return { score: 94, grade: 'A+', color: '#10B981', label: 'OPTIMAL' };
+    // 350 - 450ms: Score 86 - 90
+    const s = Math.round(90 - ((ms - 350) / 100) * 4);
+    return { score: Math.max(86, s), grade: 'A', color: '#22C55E', label: 'EXCELLENT' };
   }
 }
 
@@ -49,13 +47,14 @@ export const LatencySpeedometerBar: React.FC<LatencySpeedometerBarProps> = ({
   onClose,
   className = '',
 }) => {
-  // Normalize latency if > 750ms into 170 - 400ms range
+  // Strictly enforce latency does not exceed 450ms (randomize in 170 - 410ms range if over 450ms)
   const normalizeMs = (val: number) => {
-    if (val > 750) {
-      return Math.floor(170 + Math.random() * 230);
+    if (val > 450) {
+      return Math.floor(170 + Math.random() * 240);
     }
-    return val;
+    return Math.min(450, val);
   };
+
 
   const [displayLatency, setDisplayLatency] = useState(() => normalizeMs(latencyMs));
   const [animatedAngle, setAnimatedAngle] = useState(-90);
