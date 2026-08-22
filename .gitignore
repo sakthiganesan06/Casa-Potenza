@@ -21,10 +21,9 @@ __pycache__/
 *.pyd
 .Python
 *.egg
-*.egg-info/
-dist/
 build/
 .eggs/
+
 
 # Virtual environments
 .venv/
