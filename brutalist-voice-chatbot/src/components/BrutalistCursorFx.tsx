@@ -43,14 +43,7 @@ export const BrutalistCursorFx: React.FC<BrutalistCursorFxProps> = ({
   const [trailPositions, setTrailPositions] = useState<{ x: number; y: number; time: number }[]>([]);
   const [toggleAlert, setToggleAlert] = useState<string | null>(null);
 
-  const isTouchDevice = typeof window !== 'undefined' && (
-    'ontouchstart' in window || 
-    navigator.maxTouchPoints > 0 ||
-    window.matchMedia('(pointer: coarse)').matches
-  );
-
   const lastPosRef = useRef({ x: 0, y: 0, time: performance.now() });
-
   const animRef = useRef<number | null>(null);
 
   const themeColors: Record<ThemeColor, string> = {
@@ -234,10 +227,10 @@ export const BrutalistCursorFx: React.FC<BrutalistCursorFxProps> = ({
     };
   }, [mode]);
 
-  if (mode === 'off' || isTouchDevice) {
+  if (mode === 'off') {
     return (
       <>
-        {toggleAlert && !isTouchDevice && (
+        {toggleAlert && (
           <div className="fixed top-20 right-6 z-50 pointer-events-none animate-in slide-in-from-top-2 fade-in duration-200">
             <div className="bg-black text-white font-mono text-xs font-black uppercase px-3 py-1.5 border-2 border-white shadow-[4px_4px_0px_0px_#000000] flex items-center gap-2">
               <div className="w-2 h-2 bg-neutral-400" />
@@ -248,7 +241,6 @@ export const BrutalistCursorFx: React.FC<BrutalistCursorFxProps> = ({
       </>
     );
   }
-
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden select-none">

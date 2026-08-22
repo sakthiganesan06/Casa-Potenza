@@ -89,22 +89,22 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
         id="brutalist-popup-content"
         role="dialog"
         aria-modal="true"
-        className="relative w-full max-w-2xl bg-white border-[6px] border-black p-6 sm:p-8 hard-shadow z-30 flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="relative w-full max-w-2xl bg-white border-4 sm:border-[6px] border-black p-4 sm:p-8 hard-shadow z-30 flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150"
       >
         {/* Geometric Header Bar */}
-        <div className="flex justify-between items-center mb-5 border-b-4 border-black pb-3 select-none">
-          <div className="flex items-center gap-3">
-            <div className="w-4 h-4 bg-black" />
+        <div className="flex flex-wrap justify-between items-center gap-2 mb-4 border-b-3 sm:border-b-4 border-black pb-3 select-none">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3.5 h-3.5 bg-black" />
             <span className="font-mono font-black uppercase text-xs sm:text-sm tracking-tight">
               Live_Transcription_Stream
             </span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
-            <span className={`font-mono text-xs font-black uppercase ${currentThemeBg} text-black px-2 py-0.5 border border-black`}>
+          <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+            <span className={`font-mono text-[10px] sm:text-xs font-black uppercase ${currentThemeBg} text-black px-1.5 sm:px-2 py-0.5 border border-black`}>
               PERSONA: {interaction.persona}
             </span>
-            <span className="font-mono text-xs font-bold opacity-40">
+            <span className="font-mono text-[10px] sm:text-xs font-bold opacity-40">
               {interaction.timestamp}
             </span>
             <button
@@ -124,58 +124,60 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
         </div>
 
         {/* Scrollable Content Body */}
-        <div className="space-y-5 overflow-y-auto pr-1">
+        <div className="space-y-4 sm:space-y-5 overflow-y-auto pr-1">
           {/* 1. Raw Transcription Input Headline */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className={`font-mono text-[11px] font-bold uppercase tracking-widest ${currentThemeBg} border border-black px-2 py-0.5`}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className={`font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${currentThemeBg} border border-black px-1.5 sm:px-2 py-0.5`}>
                 VERBATIM_INPUT {interaction.audioDurationSeconds ? `(${interaction.audioDurationSeconds.toFixed(1)}s)` : ''}
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 {interaction.audioBlobUrl && (
                   <button
                     type="button"
                     onClick={handlePlayRecordedAudio}
                     title="Play original audio recording"
-                    className="font-mono text-xs font-bold uppercase hover:bg-black hover:text-white px-2 py-0.5 border border-black transition-colors cursor-pointer flex items-center gap-1"
+                    className="font-mono text-[11px] sm:text-xs font-bold uppercase hover:bg-black hover:text-white px-2 py-0.5 border border-black transition-colors cursor-pointer flex items-center gap-1"
                   >
-                    <Volume2 className="w-3 h-3" />
-                    {isPlayingAudio ? 'PLAYING...' : 'REPLAY_AUDIO'}
+                    <Volume2 className="w-3.5 h-3.5" />
+                    {isPlayingAudio ? 'PLAYING...' : 'AUDIO'}
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => handlePlayTTS(interaction.transcription, 'transcription')}
-                  title="Read aloud verbatim user prompt"
-                  className={`font-mono text-xs font-bold uppercase px-2 py-0.5 border border-black transition-colors cursor-pointer flex items-center gap-1 ${
+                  className={`font-mono text-[11px] sm:text-xs font-bold uppercase px-2 py-0.5 border border-black transition-colors cursor-pointer flex items-center gap-1 ${
                     activeTTSSection === 'transcription'
                       ? 'bg-black text-white'
                       : 'bg-white hover:bg-black hover:text-white text-black'
                   }`}
+                  title="Read aloud the transcribed input"
                 >
-                  <Volume2 className={`w-3 h-3 ${activeTTSSection === 'transcription' ? 'animate-pulse text-yellow-400' : ''}`} />
-                  {activeTTSSection === 'transcription' ? 'STOP' : 'READ_ALOUD'}
+                  <Volume2 className={`w-3.5 h-3.5 ${activeTTSSection === 'transcription' ? 'text-yellow-400 animate-pulse' : ''}`} />
+                  {activeTTSSection === 'transcription' ? 'STOP' : 'TTS'}
                 </button>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(interaction.transcription, 'transcription')}
+                  className="font-mono text-[11px] sm:text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2 py-0.5 border border-black transition-colors flex items-center gap-1 cursor-pointer"
                   title="Copy transcription"
-                  className="font-mono text-xs font-bold uppercase hover:bg-black hover:text-white px-2 py-0.5 border border-black transition-colors flex items-center gap-1 cursor-pointer"
                 >
-                  {copiedSection === 'transcription' ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                  {copiedSection === 'transcription' ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
                   {copiedSection === 'transcription' ? 'COPIED' : 'COPY'}
                 </button>
               </div>
             </div>
 
-            <p className="text-xl sm:text-2xl font-black uppercase leading-tight tracking-tighter font-sans select-text border-l-4 border-black pl-3 py-1">
-              "{interaction.transcription}"
-            </p>
+            <div className="bg-white border-3 sm:border-4 border-black p-3 sm:p-4 hard-shadow-xs">
+              <p className="font-mono text-xs sm:text-sm md:text-base font-bold uppercase leading-relaxed text-black select-text">
+                &ldquo;{interaction.transcription}&rdquo;
+              </p>
+            </div>
           </div>
 
-          {/* 2. Latency Analysis Speedometer Bar & Score Metrics */}
+          {/* 2. Latency Speedometer & Score Breakdown in Popup */}
           <LatencySpeedometerBar
-            latencyMs={interaction.latencyMs || 340}
+            latencyMs={interaction.latencyMs || 280}
             latencyScore={interaction.latencyScore}
             themeColor={themeColor}
           />
@@ -187,19 +189,19 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
           />
 
           {/* 4. AI Transcribed Answer Output Card */}
-          <div className="bg-neutral-50 border-4 border-black p-5 hard-shadow-xs relative">
-            <div className="flex items-center justify-between border-b-2 border-black pb-2 mb-3">
+          <div className="bg-neutral-50 border-3 sm:border-4 border-black p-3 sm:p-5 hard-shadow-xs relative">
+            <div className="flex flex-wrap items-center justify-between border-b-2 border-black pb-2 mb-3 gap-2">
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 ${currentThemeBg} border border-black`} />
                 <span className="font-mono text-xs font-black uppercase tracking-wider">
                   AI_TRANSCRIBED_ANSWER
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   onClick={() => handlePlayTTS(interaction.reply, 'reply')}
-                  className={`font-mono text-xs font-bold uppercase px-2.5 py-1 border-2 border-black transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  className={`font-mono text-[11px] sm:text-xs font-bold uppercase px-2 sm:px-2.5 py-1 border-2 border-black transition-colors cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
                     activeTTSSection === 'reply'
                       ? 'bg-black text-white'
                       : `${currentThemeBg} hover:bg-black hover:text-white text-black font-black`
@@ -207,12 +209,12 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
                   title="Read aloud the transcribed answer"
                 >
                   <Volume2 className={`w-3.5 h-3.5 ${activeTTSSection === 'reply' ? 'text-yellow-400 animate-pulse' : ''}`} />
-                  {activeTTSSection === 'reply' ? 'STOP_READING' : 'READ_ALOUD'}
+                  {activeTTSSection === 'reply' ? 'STOP' : 'READ_ALOUD'}
                 </button>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(interaction.reply, 'reply')}
-                  className="font-mono text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2 py-1 border-2 border-black transition-colors flex items-center gap-1 cursor-pointer"
+                  className="font-mono text-[11px] sm:text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2 sm:px-2.5 py-1 border-2 border-black transition-colors flex items-center gap-1 cursor-pointer"
                   title="Copy answer"
                 >
                   {copiedSection === 'reply' ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -228,9 +230,9 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
         </div>
 
         {/* Geometric Bottom Bar with Indicator Blocks */}
-        <div className="mt-5 pt-4 border-t-4 border-black flex flex-col sm:flex-row justify-between items-center gap-4 select-none">
+        <div className="mt-4 pt-3 border-t-3 sm:border-t-4 border-black flex flex-col sm:flex-row justify-between items-center gap-3 select-none">
           {/* Compact score indicator in footer */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-start">
             <ScoreSmallBar
               score={interaction.score || { value: 92, tier: 'P100' }}
               themeColor={themeColor}
@@ -258,7 +260,7 @@ export const BrutalistPopupBox: React.FC<BrutalistPopupBoxProps> = ({
                 audioFX.playClick(500);
                 onRecordAgain();
               }}
-              className={`font-mono text-xs font-black uppercase ${currentThemeBg} hover:bg-black hover:text-white text-black px-4 py-2 border-3 border-black hard-shadow-xs active:translate-x-[2px] active:translate-y-[2px] transition-all cursor-pointer flex items-center gap-1.5`}
+              className={`font-mono text-xs font-black uppercase ${currentThemeBg} hover:bg-black hover:text-white text-black px-3 sm:px-4 py-2 border-2 sm:border-3 border-black hard-shadow-xs active:translate-x-[2px] active:translate-y-[2px] transition-all cursor-pointer flex items-center gap-1.5`}
             >
               <Mic className="w-3.5 h-3.5 stroke-[3]" />
               Record_Again

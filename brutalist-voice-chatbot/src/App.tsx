@@ -588,27 +588,68 @@ export default function App() {
       <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-black opacity-10 pointer-events-none z-0" />
 
       {/* Top Geometric Navigation Bar */}
-      <nav className="w-full px-2 sm:px-6 md:px-8 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 z-20 relative border-b-2 border-black/10 min-h-[56px] sm:min-h-[64px]">
-        {/* Left: Brand Logo */}
-        <div className="flex items-center gap-2 shrink-0 z-10">
-          <div className="border-2 sm:border-4 border-black p-1 sm:p-2 px-2 sm:px-3 bg-black text-white font-black text-sm sm:text-lg md:text-2xl tracking-tighter shadow-[2px_2px_0px_0px_#000000] sm:shadow-[3px_3px_0px_0px_#000000]">
-            Potenza RAG
+      <nav className="w-full px-3 sm:px-8 py-2.5 sm:py-3 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 z-20 relative border-b-2 border-black/10">
+        {/* Row 1 on Mobile / Left+Right on Desktop */}
+        <div className="w-full md:w-auto flex items-center justify-between gap-2">
+          {/* Left: Brand Logo */}
+          <div className="flex items-center gap-2 shrink-0 z-10">
+            <div className="border-3 sm:border-4 border-black p-1 sm:p-2 px-2 sm:px-3 bg-black text-white font-black text-sm sm:text-xl md:text-2xl tracking-tighter shadow-[2px_2px_0px_0px_#000000] sm:shadow-[3px_3px_0px_0px_#000000]">
+              Potenza RAG
+            </div>
+            <span className="hidden 2xl:inline-block font-mono text-[11px] uppercase font-bold text-black/60 tracking-wider">
+              // By Team Casa Potenza
+            </span>
           </div>
-          <span className="hidden 2xl:inline-block font-mono text-[11px] uppercase font-bold text-black/60 tracking-wider">
-            // By Team Casa Potenza
-          </span>
+
+          {/* Mobile-only Action Buttons (Aligned to top-right of mobile header) */}
+          <div className="flex md:hidden items-center gap-1 shrink-0">
+            {/* Latency Score Button */}
+            <button
+              type="button"
+              onClick={() => {
+                audioFX.playClick(440);
+                setIsLatencyModalOpen((prev) => !prev);
+              }}
+              className={`font-mono text-[11px] font-bold uppercase px-2 py-1 border-2 border-black transition-colors cursor-pointer flex items-center gap-1 hard-shadow-xs ${
+                isLatencyModalOpen
+                  ? 'bg-black text-white'
+                  : 'bg-white hover:bg-black hover:text-white text-black'
+              }`}
+              title="Open Latency Analyzer & Speedometer"
+            >
+              <Gauge className="w-3 h-3 stroke-[2.5]" />
+              <span
+                className="px-1 py-0.2 border border-black text-[9px] font-black text-black"
+                style={{ backgroundColor: calculateLatencyScore(currentLatency).color }}
+              >
+                {calculateLatencyScore(currentLatency).score}
+              </span>
+            </button>
+
+            {/* Logs Button */}
+            <button
+              type="button"
+              onClick={() => {
+                audioFX.playClick(440);
+                setIsHistoryOpen(true);
+              }}
+              className="font-mono text-[11px] font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2 py-1 border-2 border-black transition-colors cursor-pointer hard-shadow-xs"
+            >
+              LOGS ({history.length})
+            </button>
+          </div>
         </div>
 
-        {/* Center: Hacker House Goa Banner */}
-        <div className="hidden lg:flex items-center justify-center flex-1 mx-2 overflow-hidden">
+        {/* Center: Hacker House Goa Banner (In flex flow with zero overlap on Desktop) */}
+        <div className="hidden md:flex items-center justify-center flex-1 mx-2 overflow-hidden">
           <HackerHouseBanner size="sm" className="xl:hidden" />
           <HackerHouseBanner size="md" className="hidden xl:inline-flex" />
         </div>
 
-        {/* Right: Actions Toolbar */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0 z-10 flex-wrap">
+        {/* Row 2 on Mobile (Full-width Language Selector) / Right Toolbar on Desktop */}
+        <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-1.5 sm:gap-2 z-10">
           {/* Multilingual Speech & Query Language Selector */}
-          <div className="flex items-center border-2 border-black bg-white p-0.5 hard-shadow-xs" title="Select Voice & Answer Language">
+          <div className="w-full md:w-auto flex items-center justify-between border-2 border-black bg-white p-0.5 hard-shadow-xs" title="Select Voice & Answer Language">
             {[
               { code: 'auto', label: '⚡ AUTO' },
               { code: 'ta', label: 'தமிழ்' },
@@ -623,7 +664,7 @@ export default function App() {
                   setSelectedLang(l.code as any);
                   audioFX.playClick(480);
                 }}
-                className={`font-mono text-[9px] sm:text-xs font-black px-1 sm:px-2 py-0.5 sm:py-1 transition-colors cursor-pointer ${
+                className={`flex-1 md:flex-initial font-mono text-[10px] sm:text-xs font-black px-1.5 sm:px-2 py-1 transition-colors cursor-pointer text-center ${
                   selectedLang === l.code
                     ? 'bg-black text-white'
                     : 'bg-white hover:bg-neutral-200 text-black'
@@ -634,18 +675,19 @@ export default function App() {
             ))}
           </div>
 
+          {/* Desktop-only action items */}
           <button
             type="button"
             onClick={() => {
               audioFX.playClick(440);
               setShowIntro(true);
             }}
-            className="hidden sm:flex font-mono text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 border-black transition-colors cursor-pointer items-center gap-1 hard-shadow-xs"
+            className="hidden sm:flex font-mono text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2.5 py-1.5 border-2 border-black transition-colors cursor-pointer items-center gap-1 hard-shadow-xs"
             title="Replay Indian Language Hello Intro"
           >
             <Sparkles className="w-3 h-3 text-yellow-500" />
-            <span className="hidden md:inline">HELLO_INTRO</span>
-            <span className="md:hidden">INTRO</span>
+            <span className="hidden sm:inline">HELLO_INTRO</span>
+            <span className="sm:hidden">INTRO</span>
           </button>
 
           {/* Interactive Cursor Arrow & FX Mode Toggle (Desktop only) */}
@@ -664,37 +706,39 @@ export default function App() {
             <span className="text-[11px] font-mono font-black">{cursorMode.toUpperCase()}</span>
           </button>
 
-          {/* Latency Score Toolbar Button */}
+          {/* Latency Score Toolbar Button (Desktop) */}
           <button
             type="button"
             onClick={() => {
               audioFX.playClick(440);
               setIsLatencyModalOpen((prev) => !prev);
             }}
-            className={`font-mono text-[10px] sm:text-xs font-bold uppercase px-1.5 sm:px-2.5 py-1 sm:py-1.5 border-2 border-black transition-colors cursor-pointer flex items-center gap-1 hard-shadow-xs ${
+            className={`hidden md:flex font-mono text-xs font-bold uppercase px-2.5 py-1.5 border-2 border-black transition-colors cursor-pointer items-center gap-1.5 hard-shadow-xs ${
               isLatencyModalOpen
                 ? 'bg-black text-white'
                 : 'bg-white hover:bg-black hover:text-white text-black'
             }`}
             title="Open Latency Analyzer & Speedometer"
           >
-            <Gauge className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2.5]" />
-            <span className="hidden sm:inline">LATENCY</span>
+            <Gauge className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span className="hidden md:inline">LATENCY_SCORE</span>
+            <span className="md:hidden">LATENCY</span>
             <span
-              className="px-1 py-0.2 border border-black text-[9px] sm:text-[10px] font-black text-black ml-0.5"
+              className="px-1 py-0.2 border border-black text-[10px] font-black text-black ml-0.5"
               style={{ backgroundColor: calculateLatencyScore(currentLatency).color }}
             >
               {calculateLatencyScore(currentLatency).score}
             </span>
           </button>
 
+          {/* Logs Button (Desktop) */}
           <button
             type="button"
             onClick={() => {
               audioFX.playClick(440);
               setIsHistoryOpen(true);
             }}
-            className="font-mono text-[10px] sm:text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-1.5 sm:px-2.5 py-1 sm:py-1.5 border-2 border-black transition-colors cursor-pointer hard-shadow-xs"
+            className="hidden md:flex font-mono text-xs font-bold uppercase bg-white hover:bg-black hover:text-white text-black px-2.5 py-1.5 border-2 border-black transition-colors cursor-pointer hard-shadow-xs"
           >
             LOGS ({history.length})
           </button>

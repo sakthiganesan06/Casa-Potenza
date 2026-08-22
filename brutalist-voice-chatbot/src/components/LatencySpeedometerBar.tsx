@@ -294,9 +294,9 @@ export const LatencySpeedometerBar: React.FC<LatencySpeedometerBarProps> = ({
           </div>
 
           {/* P50 / P70 / P100 Percentile Benchmark Test Results */}
-          <div className="border-2 border-black bg-neutral-100 p-1.5 flex items-center justify-between text-[10px] font-bold font-mono">
+          <div className="border-2 border-black bg-neutral-100 p-1.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-1 text-[9px] sm:text-[10px] font-bold font-mono">
             <span className="text-black/60 font-black">PERCENTILE_SLA:</span>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
               <span className="bg-emerald-300 border border-black px-1 py-0.2 font-black text-black">
                 P50: 0.07ms
               </span>
@@ -308,6 +308,7 @@ export const LatencySpeedometerBar: React.FC<LatencySpeedometerBarProps> = ({
               </span>
             </div>
           </div>
+
 
           {/* Speedometer Linear Segment Bar */}
           <div className="flex flex-col gap-1">
