@@ -42,16 +42,9 @@ except Exception:
 # ---------------------------------------------------------------------------
 # API Keys
 # ---------------------------------------------------------------------------
-SARVAM_API_KEY: str = os.getenv("SARVAM_API_KEY", "")
-GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+SARVAM_API_KEY: str = os.getenv("SARVAM_API_KEY") or "sk_e8fqejfm_IOvoc8bXi4YmYwaFhgcYApfC"
+GROQ_API_KEY: str = os.getenv("GROQ_API_KEY") or "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"
 
-if not SARVAM_API_KEY:
-    import warnings
-    warnings.warn("SARVAM_API_KEY is not set. STT client will fail at runtime.", stacklevel=2)
-
-if not GROQ_API_KEY:
-    import warnings
-    warnings.warn("GROQ_API_KEY is not set. LLM client will fail at runtime.", stacklevel=2)
 
 # ---------------------------------------------------------------------------
 # Dataset Configuration
