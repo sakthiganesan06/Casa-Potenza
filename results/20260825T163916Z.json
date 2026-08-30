@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 50,
+    "num_unanswerable": 50,
+    "num_examples": 100,
+    "num_chunks": 2391,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 50,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.56,
+        "3": 0.8,
+        "5": 0.9
+      },
+      "mrr": 0.693
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.56,
+        "3": 0.8,
+        "5": 0.9
+      },
+      "mrr": 0.693
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 50,
+    "num_unanswerable_evaluated": 50,
+    "false_refusal_rate": 0.84,
+    "false_refusal_examples": [
+      {
+        "query": "when was power rangers released in europe",
+        "expected_answer": "Power rangers was released on 2nd November in Europe."
+      },
+      {
+        "query": "what is megatron called",
+        "expected_answer": "Megatron is the founder of the Decepticon uprising, and their most well-known and feared leader."
+      },
+      {
+        "query": "what is the definition of symmetrical distribution",
+        "expected_answer": "Symmetrical distribution is a distribution that is equal above and below the mean."
+      },
+      {
+        "query": "how long for stitches to be removed",
+        "expected_answer": "From face stitches are removed in  5-7 days and from foot and ankle is removed in  approximately 14 days."
+      },
+      {
+        "query": "what is the role as a writer in society",
+        "expected_answer": "The writer’s role in society is a vital and necessary check on the values and cultural norms that encrust groups and falsely empower minority interests in setting the world agenda."
+      }
+    ],
+    "false_confidence_rate": 0.04,
+    "false_confidence_examples": [
+      {
+        "query": "difference from phycol and psychiatrist",
+        "fabricated_answer": "Psychiatrists are medical doctors who attend medical school, earn an MD, and specialize in psychiatry, allowing them to prescribe medication. Psychologists do not have medical degrees,"
+      },
+      {
+        "query": "how did adolescent suicide prevention start",
+        "fabricated_answer": "Adolescent suicide"
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 100,
+    "embed": {
+      "avg_ms": 35.36,
+      "p50_ms": 27.73,
+      "p95_ms": 98.09,
+      "p99_ms": 116.3
+    },
+    "search": {
+      "avg_ms": 0.29,
+      "p50_ms": 0.2,
+      "p95_ms": 0.46,
+      "p99_ms": 2.03
+    },
+    "retrieval_total": {
+      "avg_ms": 37.79,
+      "p50_ms": 29.34,
+      "p95_ms": 103.55,
+      "p99_ms": 118.0
+    },
+    "generation": {
+      "avg_ms": 7838.86,
+      "p50_ms": 9484.99,
+      "p95_ms": 10728.22,
+      "p99_ms": 11507.13
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": false
+  }
+}

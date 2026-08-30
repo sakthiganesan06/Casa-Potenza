@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 5,
+    "num_unanswerable": 5,
+    "num_examples": 10,
+    "num_chunks": 222,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 5,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.4,
+        "3": 0.8,
+        "5": 1.0
+      },
+      "mrr": 0.65
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.4,
+        "3": 0.8,
+        "5": 1.0
+      },
+      "mrr": 0.65
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 5,
+    "num_unanswerable_evaluated": 5,
+    "false_refusal_rate": 0.4,
+    "false_refusal_examples": [
+      {
+        "query": "how long before a collection agency reports to the credit bureau",
+        "expected_answer": "If the agency is going to report to the credit bureau, it will be reported within thirty (30) days."
+      },
+      {
+        "query": "what makes marsala wine special",
+        "expected_answer": "Marsala wine is used in many different Italian foods, but it is most famous for chicken marsala."
+      }
+    ],
+    "false_confidence_rate": 0.4,
+    "false_confidence_examples": [
+      {
+        "query": "what is ruthenian",
+        "fabricated_answer": "Ruthenian refers to the people and language of the Ruthenians, an East Slavic group (also called Rusyn) who live on both sides of the Carpathians."
+      },
+      {
+        "query": "weather channel redmond oregon hourly",
+        "fabricated_answer": "The"
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 10,
+    "embed": {
+      "avg_ms": 33.96,
+      "p50_ms": 31.97,
+      "p95_ms": 51.02,
+      "p99_ms": 51.18
+    },
+    "search": {
+      "avg_ms": 0.15,
+      "p50_ms": 0.13,
+      "p95_ms": 0.23,
+      "p99_ms": 0.27
+    },
+    "retrieval_total": {
+      "avg_ms": 35.59,
+      "p50_ms": 33.09,
+      "p95_ms": 49.97,
+      "p99_ms": 50.94
+    },
+    "generation": {
+      "avg_ms": 806.32,
+      "p50_ms": 801.39,
+      "p95_ms": 1011.34,
+      "p99_ms": 1023.57
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": true,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}

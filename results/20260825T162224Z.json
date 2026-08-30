@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 3,
+    "num_unanswerable": 3,
+    "num_examples": 6,
+    "num_chunks": 133,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 3,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.3333,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.6667
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.3333,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.6667
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "OPENAI_API_KEY not configured -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "OPENAI_API_KEY not configured -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 3,
+    "num_unanswerable_evaluated": 3,
+    "false_refusal_rate": 0.0,
+    "false_refusal_examples": [],
+    "false_confidence_rate": 0.0,
+    "false_confidence_examples": []
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 6,
+    "embed": {
+      "avg_ms": 26.34,
+      "p50_ms": 21.75,
+      "p95_ms": 52.65,
+      "p99_ms": 53.32
+    },
+    "search": {
+      "avg_ms": 0.18,
+      "p50_ms": 0.1,
+      "p95_ms": 0.52,
+      "p99_ms": 0.85
+    },
+    "retrieval_total": {
+      "avg_ms": 31.32,
+      "p50_ms": 22.26,
+      "p95_ms": 53.29,
+      "p99_ms": 53.6
+    },
+    "generation": {
+      "avg_ms": 814.66,
+      "p50_ms": 761.68,
+      "p95_ms": 1073.74,
+      "p99_ms": 1075.47
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}

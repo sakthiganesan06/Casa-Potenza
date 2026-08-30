@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 3,
+    "num_unanswerable": 3,
+    "num_examples": 6,
+    "num_chunks": 133,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 3,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.3333,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.6667
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.3333,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.6667
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 3,
+    "num_unanswerable_evaluated": 3,
+    "false_refusal_rate": 0.0,
+    "false_refusal_examples": [],
+    "false_confidence_rate": 0.0,
+    "false_confidence_examples": []
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 6,
+    "embed": {
+      "avg_ms": 44.52,
+      "p50_ms": 43.17,
+      "p95_ms": 59.27,
+      "p99_ms": 63.65
+    },
+    "search": {
+      "avg_ms": 0.12,
+      "p50_ms": 0.11,
+      "p95_ms": 0.21,
+      "p99_ms": 0.23
+    },
+    "retrieval_total": {
+      "avg_ms": 45.42,
+      "p50_ms": 43.27,
+      "p95_ms": 59.8,
+      "p99_ms": 63.95
+    },
+    "generation": {
+      "avg_ms": 783.73,
+      "p50_ms": 714.79,
+      "p95_ms": 1106.62,
+      "p99_ms": 1168.46
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}

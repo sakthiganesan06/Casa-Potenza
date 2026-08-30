@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 5,
+    "num_unanswerable": 5,
+    "num_examples": 10,
+    "num_chunks": 222,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 5,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.4,
+        "3": 0.8,
+        "5": 1.0
+      },
+      "mrr": 0.65
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.4,
+        "3": 0.8,
+        "5": 1.0
+      },
+      "mrr": 0.65
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (The judge needs a real LLM credential and found neither. Set one of:\n  OPENAI_API_KEY      (loaded via the target project's .env, see eval/target.py)\n  ANTHROPIC_API_KEY   (or ANTHROPIC_AUTH_TOKEN, or `ant auth login` -- see `ant auth status`)\n...or set EVAL_JUDGE_PROVIDER=anthropic explicitly if you're using a credential source that doesn't show up as one of the env vars above.\nJudge-based checks (faithfulness, correctness) can't run without one; retrieval, reliability, and latency checks don't need it.) -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (The judge needs a real LLM credential and found neither. Set one of:\n  OPENAI_API_KEY      (loaded via the target project's .env, see eval/target.py)\n  ANTHROPIC_API_KEY   (or ANTHROPIC_AUTH_TOKEN, or `ant auth login` -- see `ant auth status`)\n...or set EVAL_JUDGE_PROVIDER=anthropic explicitly if you're using a credential source that doesn't show up as one of the env vars above.\nJudge-based checks (faithfulness, correctness) can't run without one; retrieval, reliability, and latency checks don't need it.) -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 5,
+    "num_unanswerable_evaluated": 5,
+    "false_refusal_rate": 0.4,
+    "false_refusal_examples": [
+      {
+        "query": "how long before a collection agency reports to the credit bureau",
+        "expected_answer": "If the agency is going to report to the credit bureau, it will be reported within thirty (30) days."
+      },
+      {
+        "query": "what makes marsala wine special",
+        "expected_answer": "Marsala wine is used in many different Italian foods, but it is most famous for chicken marsala."
+      }
+    ],
+    "false_confidence_rate": 0.4,
+    "false_confidence_examples": [
+      {
+        "query": "what is ruthenian",
+        "fabricated_answer": "Ruthenian refers to the people and language of the Ruthenians, an East Slavic group (also called Rusyn) who live on both sides of the Carpathians."
+      },
+      {
+        "query": "weather channel redmond oregon hourly",
+        "fabricated_answer": "The"
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 10,
+    "embed": {
+      "avg_ms": 33.81,
+      "p50_ms": 33.74,
+      "p95_ms": 50.27,
+      "p99_ms": 61.2
+    },
+    "search": {
+      "avg_ms": 0.17,
+      "p50_ms": 0.14,
+      "p95_ms": 0.3,
+      "p99_ms": 0.35
+    },
+    "retrieval_total": {
+      "avg_ms": 36.66,
+      "p50_ms": 34.44,
+      "p95_ms": 57.61,
+      "p99_ms": 62.8
+    },
+    "generation": {
+      "avg_ms": 753.59,
+      "p50_ms": 710.3,
+      "p95_ms": 1113.74,
+      "p99_ms": 1230.09
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}

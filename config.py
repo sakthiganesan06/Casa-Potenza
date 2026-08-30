@@ -42,8 +42,8 @@ except Exception:
 # ---------------------------------------------------------------------------
 # API Keys
 # ---------------------------------------------------------------------------
-SARVAM_API_KEY: str = os.getenv("SARVAM_API_KEY") or "sk_e8fqejfm_IOvoc8bXi4YmYwaFhgcYApfC"
-GROQ_API_KEY: str = os.getenv("GROQ_API_KEY") or "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"
+SARVAM_API_KEY: str = os.getenv("SARVAM_API_KEY", "")
+GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 
 
 # ---------------------------------------------------------------------------

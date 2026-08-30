@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 2,
+    "num_unanswerable": 2,
+    "num_examples": 4,
+    "num_chunks": 85,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 2,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.5
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.5
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (The judge needs a real LLM credential and found neither. Set one of:\n  OPENAI_API_KEY      (loaded via the target project's .env, see eval/target.py)\n  ANTHROPIC_API_KEY   (or ANTHROPIC_AUTH_TOKEN, or `ant auth login` -- see `ant auth status`)\n...or set EVAL_JUDGE_PROVIDER=anthropic explicitly if you're using a credential source that doesn't show up as one of the env vars above.\nJudge-based checks (faithfulness, correctness) can't run without one; retrieval, reliability, and latency checks don't need it.) -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (The judge needs a real LLM credential and found neither. Set one of:\n  OPENAI_API_KEY      (loaded via the target project's .env, see eval/target.py)\n  ANTHROPIC_API_KEY   (or ANTHROPIC_AUTH_TOKEN, or `ant auth login` -- see `ant auth status`)\n...or set EVAL_JUDGE_PROVIDER=anthropic explicitly if you're using a credential source that doesn't show up as one of the env vars above.\nJudge-based checks (faithfulness, correctness) can't run without one; retrieval, reliability, and latency checks don't need it.) -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 2,
+    "num_unanswerable_evaluated": 2,
+    "false_refusal_rate": 0.5,
+    "false_refusal_examples": [
+      {
+        "query": "how to find the surface area of a triangle",
+        "expected_answer": "To find the area of a triangle, multiply the base by the height, and then divide by 2. The division by 2 comes from the fact that a parallelogram can be divided into 2 triangles."
+      }
+    ],
+    "false_confidence_rate": 0.0,
+    "false_confidence_examples": []
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 4,
+    "embed": {
+      "avg_ms": 22.24,
+      "p50_ms": 20.73,
+      "p95_ms": 33.35,
+      "p99_ms": 36.92
+    },
+    "search": {
+      "avg_ms": 0.09,
+      "p50_ms": 0.09,
+      "p95_ms": 0.11,
+      "p99_ms": 0.12
+    },
+    "retrieval_total": {
+      "avg_ms": 25.48,
+      "p50_ms": 21.68,
+      "p95_ms": 35.56,
+      "p99_ms": 37.43
+    },
+    "generation": {
+      "avg_ms": 790.46,
+      "p50_ms": 770.82,
+      "p95_ms": 932.21,
+      "p99_ms": 944.66
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": true,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}

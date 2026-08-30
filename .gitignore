@@ -2,8 +2,11 @@
 # .gitignore — Voice-Enabled RAG System
 # ============================================================
 
-# API Keys — NEVER commit
+# API Keys & Secrets — NEVER commit
 .env
+.env.*
+.env*.local
+!.env.example
 
 # LanceDB database files
 lance_db/

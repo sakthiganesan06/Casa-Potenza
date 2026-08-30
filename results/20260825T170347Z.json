@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 2,
+    "num_unanswerable": 2,
+    "num_examples": 4,
+    "num_chunks": 85,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 2,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.5
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.5
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "Judge error (OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}) -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 2,
+    "num_unanswerable_evaluated": 2,
+    "false_refusal_rate": 0.0,
+    "false_refusal_examples": [],
+    "false_confidence_rate": 0.5,
+    "false_confidence_examples": [
+      {
+        "query": "decreasing the average cost of each good as output increases",
+        "fabricated_answer": "As output rises, the fixed cost is spread over more units, so the average cost per unit falls."
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 4,
+    "embed": {
+      "avg_ms": 41.27,
+      "p50_ms": 39.45,
+      "p95_ms": 49.72,
+      "p99_ms": 51.08
+    },
+    "search": {
+      "avg_ms": 0.12,
+      "p50_ms": 0.11,
+      "p95_ms": 0.16,
+      "p99_ms": 0.17
+    },
+    "retrieval_total": {
+      "avg_ms": 43.69,
+      "p50_ms": 43.45,
+      "p95_ms": 50.83,
+      "p99_ms": 51.42
+    },
+    "generation": {
+      "avg_ms": 902.2,
+      "p50_ms": 958.45,
+      "p95_ms": 1174.67,
+      "p99_ms": 1199.65
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}

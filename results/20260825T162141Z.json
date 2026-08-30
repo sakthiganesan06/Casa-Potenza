@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "target_root": "D:\\GitHub\\Voice",
+    "generation_backend": "api",
+    "generation_model_hint": "openai/gpt-oss-20b",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 2,
+    "num_unanswerable": 2,
+    "num_examples": 4,
+    "num_chunks": 85,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 2,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.5
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 1.0,
+        "5": 1.0
+      },
+      "mrr": 0.5
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "OPENAI_API_KEY not configured -- judge-based checks skipped."
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 0,
+    "error": "OPENAI_API_KEY not configured -- judge-based checks skipped."
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 2,
+    "num_unanswerable_evaluated": 2,
+    "false_refusal_rate": 0.0,
+    "false_refusal_examples": [],
+    "false_confidence_rate": 0.5,
+    "false_confidence_examples": [
+      {
+        "query": "decreasing the average cost of each good as output increases",
+        "fabricated_answer": "The average cost per unit falls as output rises because the same fixed cost ($50,000) is spread over more units, reducing the fixed cost per unit."
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 4,
+    "embed": {
+      "avg_ms": 41.61,
+      "p50_ms": 35.11,
+      "p95_ms": 66.76,
+      "p99_ms": 68.19
+    },
+    "search": {
+      "avg_ms": 0.32,
+      "p50_ms": 0.1,
+      "p95_ms": 1.21,
+      "p99_ms": 1.6
+    },
+    "retrieval_total": {
+      "avg_ms": 45.33,
+      "p50_ms": 41.36,
+      "p95_ms": 60.85,
+      "p99_ms": 63.01
+    },
+    "generation": {
+      "avg_ms": 864.45,
+      "p50_ms": 723.75,
+      "p95_ms": 1258.67,
+      "p99_ms": 1329.43
+    },
+    "retrieval_latency_budget_ms": 50,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": true
+  }
+}
